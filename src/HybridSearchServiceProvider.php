@@ -20,7 +20,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     public function bootingPackage(): void
     {
-        /** @phpstan-ignore-next-line */
         Blueprint::macro('hybridFullText', function (array $columns, ?string $indexName = null): void {
             /** @var mixed $self */
             $self = $this;
@@ -33,7 +32,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
             FullTextSchema::index($table, $columns, $indexName);
         });
 
-        /** @phpstan-ignore-next-line */
         Blueprint::macro('dropHybridFullText', function (string|array|null $indexName = null): void {
             /** @var mixed $self */
             $self = $this;
@@ -47,7 +45,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     private function registerWhereHybridFullTextMacro(): void
     {
-        /** @phpstan-ignore-next-line */
         Builder::macro('whereHybridFullText', function ($columns, $value, array $options = [], string $boolean = 'and', bool $not = false): Builder {
             /** @var mixed $self */
             $self = $this;
@@ -83,7 +80,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
             return $self->whereFullText($columns, $value, $options, $boolean);
         });
 
-        /** @phpstan-ignore-next-line */
         EloquentBuilder::macro('whereHybridFullText', function ($columns, $value, array $options = [], string $boolean = 'and', bool $not = false) {
             /** @var mixed $self */
             $self = $this;
