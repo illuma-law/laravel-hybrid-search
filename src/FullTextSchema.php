@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Schema;
 
 final class FullTextSchema
 {
+    /**
+     * @param  array<int, string>  $columns
+     */
     public static function index(string $table, array $columns, ?string $indexName = null): void
     {
         $driver = Schema::getConnection()->getDriverName();
@@ -23,6 +26,9 @@ final class FullTextSchema
         self::createNative($table, $columns, $indexName);
     }
 
+    /**
+     * @param  string|array<int, string>|null  $indexName
+     */
     public static function drop(string $table, string|array|null $indexName = null): void
     {
         $driver = Schema::getConnection()->getDriverName();
@@ -39,6 +45,9 @@ final class FullTextSchema
         });
     }
 
+    /**
+     * @param  array<int, string>  $columns
+     */
     private static function createNative(string $table, array $columns, ?string $indexName): void
     {
         Schema::table($table, function (Blueprint $blueprint) use ($columns, $indexName): void {
@@ -47,6 +56,9 @@ final class FullTextSchema
         });
     }
 
+    /**
+     * @param  array<int, string>  $columns
+     */
     private static function createSqliteFts5(string $table, array $columns): void
     {
         $ftsTable = "{$table}_fts";
@@ -69,7 +81,7 @@ final class FullTextSchema
             $table,
             $ftsTable,
             $cols,
-            implode(', ', array_map(fn ($col) => "new.{$col}", $columns))
+            implode(', ', array_map(fn (string $col) => "new.{$col}", $columns))
         ));
 
         DB::statement(sprintf(
@@ -82,7 +94,7 @@ final class FullTextSchema
             $ftsTable,
             $ftsTable,
             $cols,
-            implode(', ', array_map(fn ($col) => "new.{$col}", $columns))
+            implode(', ', array_map(fn (string $col) => "new.{$col}", $columns))
         ));
 
         DB::statement(sprintf(
