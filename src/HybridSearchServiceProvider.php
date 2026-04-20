@@ -20,10 +20,11 @@ class HybridSearchServiceProvider extends PackageServiceProvider
     public function bootingPackage(): void
     {
         Blueprint::macro('hybridFullText', function (array $columns, ?string $indexName = null): void {
-            /** @var Blueprint $self */
-            $self = $this;
+            if (! $this instanceof Blueprint) {
+                return;
+            }
             /** @phpstan-ignore-next-line */
-            $table = $self->table;
+            $table = $this->table;
 
             if (config('database.default') === 'sqlsrv') {
                 throw new \RuntimeException('SQL Server requires manual Full-Text Index creation. Please create a Full-Text Catalog and then a Full-Text Index on table "'.$table.'" for columns: '.implode(', ', $columns));
