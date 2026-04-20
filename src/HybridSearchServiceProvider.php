@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IllumaLaw\HybridSearch;
 
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Spatie\LaravelPackageTools\Package;
@@ -19,12 +20,11 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     public function bootingPackage(): void
     {
+        /** @phpstan-ignore-next-line */
         Blueprint::macro('hybridFullText', function (array $columns, ?string $indexName = null): void {
-            if (! $this instanceof Blueprint) {
-                return;
-            }
-            /** @phpstan-ignore-next-line */
-            $table = $this->table;
+            /** @var mixed $self */
+            $self = $this;
+            $table = $self->table;
 
             if (config('database.default') === 'sqlsrv') {
                 throw new \RuntimeException('SQL Server requires manual Full-Text Index creation. Please create a Full-Text Catalog and then a Full-Text Index on table "'.$table.'" for columns: '.implode(', ', $columns));
@@ -33,10 +33,10 @@ class HybridSearchServiceProvider extends PackageServiceProvider
             FullTextSchema::index($table, $columns, $indexName);
         });
 
+        /** @phpstan-ignore-next-line */
         Blueprint::macro('dropHybridFullText', function (string|array|null $indexName = null): void {
-            /** @var Blueprint $self */
+            /** @var mixed $self */
             $self = $this;
-            /** @phpstan-ignore-next-line */
             $table = $self->table;
 
             FullTextSchema::drop($table, $indexName);
@@ -47,8 +47,9 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     private function registerWhereHybridFullTextMacro(): void
     {
+        /** @phpstan-ignore-next-line */
         Builder::macro('whereHybridFullText', function ($columns, $value, array $options = [], string $boolean = 'and', bool $not = false): Builder {
-            /** @var Builder $self */
+            /** @var mixed $self */
             $self = $this;
             $driver = $self->getConnection()->getDriverName();
 
@@ -74,18 +75,17 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
             // 3. PostgreSQL / MySQL Path (Use native whereFullText)
             if ($not) {
-                /** @phpstan-ignore-next-line */
                 return $self->whereNot(function ($query) use ($columns, $value, $options) {
                     $query->whereFullText($columns, $value, $options);
                 }, $boolean);
             }
 
-            /** @phpstan-ignore-next-line */
             return $self->whereFullText($columns, $value, $options, $boolean);
         });
 
-        \Illuminate\Database\Eloquent\Builder::macro('whereHybridFullText', function ($columns, $value, array $options = [], string $boolean = 'and', bool $not = false) {
-            /** @var \Illuminate\Database\Eloquent\Builder $self */
+        /** @phpstan-ignore-next-line */
+        EloquentBuilder::macro('whereHybridFullText', function ($columns, $value, array $options = [], string $boolean = 'and', bool $not = false) {
+            /** @var mixed $self */
             $self = $this;
             $self->getQuery()->whereHybridFullText($columns, $value, $options, $boolean, $not);
 
