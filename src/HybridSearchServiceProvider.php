@@ -68,9 +68,9 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
             // 3. PostgreSQL / MySQL Path (Use native whereFullText)
             if ($not) {
-                return $this->whereNested(function ($query) use ($columns, $value, $options) {
+                return $this->whereNot(function ($query) use ($columns, $value, $options) {
                     $query->whereFullText($columns, $value, $options);
-                }, $boolean, true);
+                }, $boolean);
             }
 
             return $this->whereFullText($columns, $value, $options, $boolean);
