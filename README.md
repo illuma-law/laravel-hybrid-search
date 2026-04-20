@@ -4,61 +4,46 @@
 [![Packagist License](https://img.shields.io/badge/Licence-MIT-blue)](http://choosealicense.com/licenses/mit/)
 [![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/laravel-hybrid-search?label=Version)](https://packagist.org/packages/illuma-law/laravel-hybrid-search)
 
-**Portable Full-Text Search macros and Reciprocal Rank Fusion**
+Portable Full-Text Search macros and Reciprocal Rank Fusion for Laravel.
 
-This package provides portable Full-Text Search (FTS) schema macros and the **Reciprocal Rank Fusion (RRF)** algorithm for Laravel. It enables seamless text searching across PostgreSQL, MySQL, SQL Server, and SQLite (via FTS5 virtual tables), and provides an elegant way to combine keyword search results with vector search results.
+This package provides portable Full-Text Search (FTS) schema macros and the **Reciprocal Rank Fusion (RRF)** algorithm for Laravel applications. It enables seamless text searching across PostgreSQL, MySQL, SQL Server, and SQLite, abstracting away the database-specific syntax. It also provides an elegant way to merge and re-rank traditional keyword search results with AI vector search results.
 
-- [Database Support Matrix](#database-support-matrix)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Schema Migrations](#schema-migrations)
-  - [Full-Text Searching](#full-text-searching)
-  - [Reciprocal Rank Fusion (RRF)](#reciprocal-rank-fusion-rrf)
-- [Testing](#testing)
-- [Credits](#credits)
-- [License](#license)
+## Features
+
+- **Database Portability:** Write one migration and one query that works across all supported databases.
+- **SQLite FTS5 Support:** Automatically creates Virtual Tables and database triggers to keep SQLite full-text indexes synchronized.
+- **Reciprocal Rank Fusion:** Mathematically combine multiple ranked lists (e.g., BM25 + Vector Similarity) into a single optimized result set.
+- **Scout Key Trait:** Ensure Scout-indexed models always return a string primary key — required for Typesense and other engines that reject integer keys.
+- **Scout Health Check:** Optional `spatie/laravel-health` check that probes Meilisearch, Typesense, and Algolia endpoints.
 
 ## Database Support Matrix
 
-| Database | Full-Text Macro | Query Macro | Syntax |
+| Database | Schema Macro | Query Builder Macro | Underlying Syntax |
 | :--- | :--- | :--- | :--- |
 | **PostgreSQL** | Native | Native | `whereFullText` |
 | **MySQL** | Native | Native | `whereFullText` |
-| **SQL Server** | Manual Instructions | Native (via `CONTAINS`) | `CONTAINS` |
-| **SQLite** | Virtual Table + Triggers | Native (via MATCH) | `MATCH` |
+| **SQL Server** | Manual Instructions* | Native | `CONTAINS` |
+| **SQLite** | Virtual Table + Triggers | Native | `MATCH` |
+
+*\*SQL Server requires manual creation of the Full-Text Catalog.*
 
 ## Installation
 
-Require this package with composer using the following command:
+You can install the package via composer:
 
 ```bash
 composer require illuma-law/laravel-hybrid-search
 ```
 
-## Usage
+The service provider will automatically register the `Blueprint` and `Builder` macros.
 
-### TL;DR
-
-Create a full-text index in your migration:
-```php
-$table->hybridFullText(['title', 'body'], 'articles_search_index');
-```
-
-Perform a keyword search:
-```php
-$results = Article::query()->whereHybridFullText(['title', 'body'], 'laravel macros')->get();
-```
-
-Combine keyword and vector search results:
-```php
-$combined = ReciprocalRankFusion::combine([$keywordResults, $vectorResults]);
-```
+## Usage & Integration
 
 ### Schema Migrations
 
-Use the `hybridFullText` macro to define portable full-text indexes. 
+Use the `hybridFullText` macro in your migrations. 
 
-On PostgreSQL and MySQL, this delegates to Laravel's native full-text index generation. On SQLite, it intelligently creates an `FTS5` virtual table (e.g., `articles_fts`) and sets up `INSERT`, `UPDATE`, and `DELETE` database triggers to ensure the virtual table automatically stays synchronized with your main table.
+On PostgreSQL and MySQL, this directly uses Laravel's native full-text index generation. On SQLite, it creates an `FTS5` virtual table (e.g., `articles_fts`) and sets up `INSERT`, `UPDATE`, and `DELETE` database triggers. This ensures your SQLite virtual table automatically stays synchronized with your main table without requiring any PHP-side application logic.
 
 ```php
 use Illuminate\Database\Migrations\Migration;
@@ -75,8 +60,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Creates native FTS index on pgsql/mysql, 
-        // or FTS5 virtual table + triggers on sqlite.
+        // Creates native FTS index on pg/mysql, or FTS5 virtual table + triggers on sqlite
         Schema::table('articles', function (Blueprint $table) {
             $table->hybridFullText(['title', 'body'], 'articles_search_index');
         });
@@ -88,26 +72,29 @@ return new class extends Migration {
             // Safely drops native indexes or SQLite virtual tables/triggers
             $table->dropHybridFullText('articles_search_index');
         });
+        
         Schema::dropIfExists('articles');
     }
 };
 ```
 
-*Note for SQL Server: The macro will throw an exception with instructions to manually create the Full-Text Catalog and Index, as SQL Server requires specific configuration for FTS.*
-
 ### Full-Text Searching
 
-Use the `whereHybridFullText` macro on any Query Builder or Eloquent Builder instance to perform text searches. It safely abstracts the complex `MATCH` syntax required by SQLite's FTS5, and the `CONTAINS` syntax for SQL Server, while using native `whereFullText` capabilities on PostgreSQL and MySQL.
+Use the `whereHybridFullText` macro on any Query Builder or Eloquent Builder. It automatically handles the complex `MATCH` syntax for SQLite FTS5 and the `CONTAINS` syntax for SQL Server, while using native `whereFullText` on PostgreSQL and MySQL.
 
 ```php
+use App\Models\Article;
+
+// Search for articles containing "laravel macros"
 $results = Article::query()
-    ->whereHybridFullText(['title', 'body'], 'laravel hybrid search')
+    ->whereHybridFullText(['title', 'body'], 'laravel macros')
     ->get();
 ```
 
 You can also invert the search to exclude matches:
 
 ```php
+// Find articles that DO NOT contain the word "outdated"
 $results = Article::query()
     ->whereHybridFullText(['title', 'body'], 'outdated', not: true)
     ->get();
@@ -115,45 +102,91 @@ $results = Article::query()
 
 ### Reciprocal Rank Fusion (RRF)
 
-When building advanced search systems, you often want to combine results from multiple retrieval strategies. For example, you might retrieve the top 50 results using traditional keyword search (BM25), and another top 50 using semantic vector search (Cosine Similarity). 
+When building advanced search systems, you often want to retrieve the top results using traditional keyword search (BM25) and semantic vector search (Cosine Similarity), then combine them.
 
-The `ReciprocalRankFusion` class provides a mathematically sound way to merge these disparate result sets and rank them based on their relative positions in the original lists.
+The `ReciprocalRankFusion` class merges these disparate result sets by assigning an RRF score to each item based on its position in the original ranked lists.
 
 ```php
 use IllumaLaw\HybridSearch\ReciprocalRankFusion;
+use App\Models\Article;
 
-// 1. Get results from Keyword Search
-$keywordResults = Article::query()
+// 1. Get the top 50 IDs from Keyword Search
+$keywordIds = Article::query()
     ->whereHybridFullText(['title', 'body'], 'authentication')
-    ->take(50)
-    ->get();
+    ->limit(50)
+    ->pluck('id');
 
-// 2. Get results from Vector Search (using laravel-vector-schema)
-$vectorResults = Article::query()
-    ->whereHybridVectorSimilarTo('embedding', $queryVector)
-    ->take(50)
-    ->get();
+// 2. Get the top 50 IDs from Vector Search
+$vectorIds = Article::query()
+    ->orderByVectorSimilarity('embedding', $queryVector) // Example syntax
+    ->limit(50)
+    ->pluck('id');
 
-// 3. Combine and re-rank the results
-$combined = ReciprocalRankFusion::combine(
-    [$keywordResults, $vectorResults],
-    k: 60 // Optional: RRF constant (default is 60)
+// 3. Combine and re-rank the IDs using RRF
+$rankedScores = ReciprocalRankFusion::combine(
+    [
+        'keyword' => $keywordIds, 
+        'vector' => $vectorIds
+    ],
+    k: 60 // The RRF constant (default is 60)
 );
 
-// $combined is a unique Collection of Article models, 
-// ordered by their computed RRF score.
+// $rankedScores is a Collection of [id => score], sorted descending by score.
+$topIds = $rankedScores->keys();
+
+// 4. Fetch the final ordered models
+$finalResults = Article::whereIn('id', $topIds)
+    ->orderByRaw('FIELD(id, ' . $topIds->implode(',') . ')')
+    ->get();
 ```
 
+## Scout Key Trait
+
+Some search engines (e.g. Typesense) require Scout keys to be strings. Add the `EnsuresScoutKeyIsString` trait to any model that uses integer or UUID primary keys alongside the Scout `Searchable` trait.
+
+```php
+use IllumaLaw\HybridSearch\Concerns\EnsuresScoutKeyIsString;
+use Laravel\Scout\Searchable;
+
+class Article extends Model
+{
+    use EnsuresScoutKeyIsString, Searchable {
+        EnsuresScoutKeyIsString::getScoutKey insteadof Searchable;
+        EnsuresScoutKeyIsString::getScoutKeyName insteadof Searchable;
+    }
+}
+```
+
+## Scout Health Check
+
+An optional `spatie/laravel-health` check that pings the configured Scout engine's health endpoint. Supports Meilisearch, Typesense, and Algolia. Non-remote drivers (`database`, `collection`, `null`) are automatically skipped.
+
+Install the optional dependency first:
+
+```bash
+composer require spatie/laravel-health
+```
+
+Then register the check in your application:
+
+```php
+use IllumaLaw\HybridSearch\HealthChecks\ScoutEngineCheck;
+use Spatie\Health\Facades\Health;
+
+Health::checks([
+    ScoutEngineCheck::new(),
+]);
+```
+
+The check reads standard Scout configuration keys (`scout.driver`, `scout.meilisearch.*`, `scout.typesense.*`, `scout.algolia.*`). You can adjust the request timeout via `config('health.scout.timeout_seconds')` (default: 5).
+
 ## Testing
+
+Run the test suite:
 
 ```bash
 composer test
 ```
-
-## Credits
-
-- [illuma-law](https://github.com/illuma-law)
-- [All Contributors](../../contributors)
 
 ## License
 

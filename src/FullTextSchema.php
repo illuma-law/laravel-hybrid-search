@@ -40,8 +40,9 @@ final class FullTextSchema
         }
 
         Schema::table($table, function (Blueprint $blueprint) use ($indexName): void {
-            /** @phpstan-ignore-next-line */
-            $blueprint->dropFullText($indexName);
+            if (method_exists($blueprint, 'dropFullText')) {
+                $blueprint->dropFullText($indexName);
+            }
         });
     }
 
@@ -51,8 +52,9 @@ final class FullTextSchema
     private static function createNative(string $table, array $columns, ?string $indexName): void
     {
         Schema::table($table, function (Blueprint $blueprint) use ($columns, $indexName): void {
-            /** @phpstan-ignore-next-line */
-            $blueprint->fullText($columns, $indexName);
+            if (method_exists($blueprint, 'fullText')) {
+                $blueprint->fullText($columns, $indexName);
+            }
         });
     }
 

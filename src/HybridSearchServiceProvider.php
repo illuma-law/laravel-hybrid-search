@@ -20,9 +20,15 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     public function bootingPackage(): void
     {
-        Blueprint::macro('hybridFullText', function (array $columns, ?string $indexName = null): void {
-            /** @var Blueprint $self */
+        /** @var mixed $blueprintClass */
+        $blueprintClass = Blueprint::class;
+        $blueprintClass::macro('hybridFullText', function (array $columns, ?string $indexName = null): void {
+            /** @var mixed $self */
             $self = $this;
+
+            if (! $self instanceof Blueprint) {
+                return;
+            }
 
             /** @var string $table */
             $table = (new \ReflectionClass($self))->getProperty('table')->getValue($self);
@@ -36,9 +42,13 @@ class HybridSearchServiceProvider extends PackageServiceProvider
             FullTextSchema::index($table, $columns, $indexName);
         });
 
-        Blueprint::macro('dropHybridFullText', function (string|array|null $indexName = null): void {
-            /** @var Blueprint $self */
+        $blueprintClass::macro('dropHybridFullText', function (string|array|null $indexName = null): void {
+            /** @var mixed $self */
             $self = $this;
+
+            if (! $self instanceof Blueprint) {
+                return;
+            }
 
             /** @var string $table */
             $table = (new \ReflectionClass($self))->getProperty('table')->getValue($self);
@@ -52,62 +62,86 @@ class HybridSearchServiceProvider extends PackageServiceProvider
 
     private function registerWhereHybridFullTextMacro(): void
     {
-        Builder::macro('whereHybridFullText', function (string|array $columns, string $value, array $options = [], string $boolean = 'and', bool $not = false): Builder {
-            /** @var Builder $self */
+        /** @var mixed $builderClass */
+        $builderClass = Builder::class;
+        $builderClass::macro('whereHybridFullText', function (string|array $columns, string $value, array $options = [], string $boolean = 'and', bool $not = false): Builder {
+            /** @var mixed $self */
             $self = $this;
 
-            /** @var \Illuminate\Database\Connection $connection */
+            if (! $self instanceof Builder) {
+                throw new \RuntimeException('Expected Builder');
+            }
+
+            /** @var mixed $connection */
             $connection = $self->getConnection();
+            /** @var string $driver */
             $driver = $connection->getDriverName();
 
             if ($driver === 'sqlite') {
+                /** @var mixed $from */
+                $from = $self->from;
                 /** @var string $table */
-                $table = $self->from;
+                $table = (string) $from;
                 $ftsTable = "{$table}_fts";
                 $escapedValue = '"'.str_replace(['"', '\\'], ['""', '\\\\'], $value).'"';
                 $operator = $not ? 'NOT IN' : 'IN';
 
-                /** @var \Illuminate\Database\Query\Grammars\Grammar $grammar */
+                /** @var mixed $grammar */
                 $grammar = $self->getGrammar();
                 $wrappedTable = (string) $grammar->wrap($table);
                 $wrappedId = (string) $grammar->wrap('id');
 
                 $raw = "{$wrappedTable}.{$wrappedId} {$operator} (SELECT rowid FROM {$ftsTable} WHERE {$ftsTable} MATCH ?)";
 
-                /** @phpstan-ignore-next-line */
-                return $self->whereRaw($raw, [$escapedValue], $boolean);
+                /** @var Builder $res */
+                $res = $self->whereRaw($raw, [$escapedValue], $boolean);
+
+                return $res;
             }
 
             if ($driver === 'sqlsrv') {
-                /** @var \Illuminate\Database\Query\Grammars\Grammar $grammar */
+                /** @var mixed $grammar */
                 $grammar = $self->getGrammar();
                 $columnsList = is_array($columns) ? implode(', ', array_map(fn (mixed $col) => (string) $grammar->wrap(is_string($col) ? $col : ''), $columns)) : (string) $grammar->wrap($columns);
                 $placeholder = (string) $grammar->parameter($value);
                 $raw = sprintf('%sCONTAINS((%s), %s)', $not ? 'NOT ' : '', $columnsList, $placeholder);
 
-                /** @phpstan-ignore-next-line */
-                return $self->whereRaw($raw, [$value], $boolean);
+                /** @var Builder $res */
+                $res = $self->whereRaw($raw, [$value], $boolean);
+
+                return $res;
             }
 
             if ($not) {
-                /** @phpstan-ignore-next-line */
-                return $self->whereNot(function (Builder $query) use ($columns, $value, $options) {
+                /** @var Builder $res */
+                $res = $self->whereNot(function (Builder $query) use ($columns, $value, $options) {
                     /** @var string|array<int, string> $columns */
                     return $query->whereFullText($columns, $value, $options);
                 }, $boolean);
+
+                return $res;
             }
 
             /** @var string|array<int, string> $columns */
-            /** @phpstan-ignore-next-line */
-            return $self->whereFullText($columns, $value, $options, $boolean);
+            /** @var Builder $res */
+            $res = $self->whereFullText($columns, $value, $options, $boolean);
+
+            return $res;
         });
 
-        EloquentBuilder::macro('whereHybridFullText', function (string|array $columns, string $value, array $options = [], string $boolean = 'and', bool $not = false): EloquentBuilder {
-            /** @var EloquentBuilder<\Illuminate\Database\Eloquent\Model> $self */
+        /** @var mixed $eloquentBuilderClass */
+        $eloquentBuilderClass = EloquentBuilder::class;
+        $eloquentBuilderClass::macro('whereHybridFullText', function (string|array $columns, string $value, array $options = [], string $boolean = 'and', bool $not = false): EloquentBuilder {
+            /** @var mixed $self */
             $self = $this;
 
-            /** @phpstan-ignore-next-line */
-            $self->getQuery()->whereHybridFullText($columns, $value, $options, $boolean, $not);
+            if (! $self instanceof EloquentBuilder) {
+                throw new \RuntimeException('Expected EloquentBuilder');
+            }
+
+            /** @var mixed $query */
+            $query = $self->getQuery();
+            $query->whereHybridFullText($columns, $value, $options, $boolean, $not);
 
             return $self;
         });

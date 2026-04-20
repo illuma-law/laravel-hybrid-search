@@ -8,12 +8,14 @@ use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Mockery\MockInterface;
 
 function getHybridSearchMockBuilder(string $driver): Builder
 {
+    /** @var Connection&MockInterface $connection */
     $connection = Mockery::mock(Connection::class);
     $connection->shouldReceive('getTablePrefix')->andReturn('');
-    $connection->shouldReceive('raw')->andReturnUsing(fn ($value) => new Expression($value));
+    $connection->shouldReceive('raw')->andReturnUsing(fn (mixed $value): Expression => new Expression((string) $value));
 
     $grammar = match ($driver) {
         'mysql' => new MySqlGrammar($connection),
@@ -22,6 +24,7 @@ function getHybridSearchMockBuilder(string $driver): Builder
         'sqlsrv' => new SqlServerGrammar($connection),
         'mariadb' => new MySqlGrammar($connection),
         'singlestore' => new MySqlGrammar($connection),
+        default => throw new InvalidArgumentException("Unsupported driver: {$driver}"),
     };
 
     $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);

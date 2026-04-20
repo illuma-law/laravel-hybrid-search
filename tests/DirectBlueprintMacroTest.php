@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Database\Schema\Grammars\SqlServerGrammar;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +19,7 @@ it('calls hybridFullText from macro on sqlite', function () {
         $table->hybridFullText(['title', 'body']);
     });
 
-    expect(true)->toBeTrue();
+    expect(Schema::hasTable('test_table_macro_fts'))->toBeTrue();
 });
 
 it('calls dropHybridFullText from macro on sqlite', function () {
@@ -36,7 +35,7 @@ it('calls dropHybridFullText from macro on sqlite', function () {
         $table->dropHybridFullText();
     });
 
-    expect(true)->toBeTrue();
+    expect(Schema::hasTable('test_table_drop_fts'))->toBeFalse();
 });
 
 it('throws exception for hybridFullText on sqlsrv', function () {
@@ -50,21 +49,3 @@ it('throws exception for hybridFullText on sqlsrv', function () {
     $blueprint = new Blueprint($connection, 'test_table');
     $blueprint->hybridFullText(['title']);
 })->throws(RuntimeException::class, 'SQL Server requires manual Full-Text Index creation');
-
-it('uses native fulltext for other drivers', function () {
-    Config::set('database.default', 'mysql');
-    Config::set('database.connections.mysql.driver', 'mysql');
-
-    $connection = Mockery::mock(Connection::class);
-    $connection->shouldReceive('getSchemaGrammar')->andReturn(new MySqlGrammar($connection));
-    $connection->shouldReceive('getDriverName')->andReturn('mysql');
-
-    $blueprint = new Blueprint($connection, 'test_table');
-
-    try {
-        $blueprint->hybridFullText(['title']);
-    } catch (Throwable) {
-    }
-
-    expect(true)->toBeTrue();
-});

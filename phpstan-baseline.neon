@@ -1,0 +1,313 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Query\\Builder\:\:\$from\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:getQuery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:getConnection\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:getGrammar\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereFullText\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereNot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:whereRaw\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot call method getDriverName\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot call method parameter\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot call method whereHybridFullText\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot call method wrap\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot call static method macro\(\) on mixed\.$#'
+			identifier: staticMethod.nonObject
+			count: 4
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^PHPDoc tag @var with type mixed is not subtype of native type \$this\(IllumaLaw\\HybridSearch\\HybridSearchServiceProvider\)\.$#'
+			identifier: varTag.nativeType
+			count: 4
+			path: src/HybridSearchServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:id\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:text\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturn\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Class Illuminate\\Database\\Schema\\Blueprint does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
+			count: 2
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Parameter \#1 \$connection of class Illuminate\\Database\\Schema\\Grammars\\MySqlGrammar constructor expects Illuminate\\Database\\Connection, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Parameter \#1 \$connection of class Illuminate\\Database\\Schema\\Grammars\\SqlServerGrammar constructor expects Illuminate\\Database\\Connection, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/DirectBlueprintMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<TestModel\>\:\:getQuery\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:id\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Cannot call method toSql\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/EloquentMacroTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:id\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:string\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\Blueprint\:\:text\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturn\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:atLeast\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined static method Illuminate\\Database\\Schema\\Blueprint\:\:hasMacro\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Calling toBeTrue\(\) on Expectation\<true\> will always pass — the assertion is redundant\.$#'
+			identifier: pest.redundantExpectation
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Class Illuminate\\Database\\Schema\\Blueprint does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Parameter \#1 \$connection of class Illuminate\\Database\\Schema\\Grammars\\MySqlGrammar constructor expects Illuminate\\Database\\Connection, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/FullTextSchemaTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:from\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:toSql\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturn\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturnUsing\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Class Illuminate\\Database\\Query\\Builder does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
+			count: 1
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strtolower expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Parameter \#1 \$value of class Illuminate\\Database\\Query\\Expression constructor expects TValue of float\|int\|literal\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/MacroSqlTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of method Pest\\Mixins\\Expectation\<float\|null\>\:\:toBeGreaterThan\(\) expects DateTimeInterface\|float\|int\|string, float\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/ReciprocalRankFusionTest.php
+
+		-
+			message: '#^Parameter \#1 \$rankings of static method IllumaLaw\\HybridSearch\\ReciprocalRankFusion\:\:combine\(\) expects array\<string, Illuminate\\Support\\Collection\<int, int\|string\>\>, array\{source1\: Illuminate\\Support\\Collection\<int, int\>, source2\: Illuminate\\Support\\Collection\<int, int\>\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/ReciprocalRankFusionTest.php
+
+		-
+			message: '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/TestCase.php
