@@ -16,11 +16,11 @@ function getHybridSearchMockBuilder(string $driver): Builder
     $connection->shouldReceive('raw')->andReturnUsing(fn ($value) => new Expression($value));
 
     $grammar = match ($driver) {
-        'mysql'       => new MySqlGrammar($connection),
-        'pgsql'       => new PostgresGrammar($connection),
-        'sqlite'      => new SQLiteGrammar($connection),
-        'sqlsrv'      => new SqlServerGrammar($connection),
-        'mariadb'     => new MySqlGrammar($connection),
+        'mysql' => new MySqlGrammar($connection),
+        'pgsql' => new PostgresGrammar($connection),
+        'sqlite' => new SQLiteGrammar($connection),
+        'sqlsrv' => new SqlServerGrammar($connection),
+        'mariadb' => new MySqlGrammar($connection),
         'singlestore' => new MySqlGrammar($connection),
     };
 
