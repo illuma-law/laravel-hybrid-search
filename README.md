@@ -2,8 +2,7 @@
 
 [![Tests](https://github.com/illuma-law/laravel-hybrid-search/actions/workflows/run-tests.yml/badge.svg)](https://github.com/illuma-law/laravel-hybrid-search/actions)
 [![Packagist License](https://img.shields.io/badge/Licence-MIT-blue)](http://choosealicense.com/licenses/mit/)
-[![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/laravel-hybrid-search?label=Stable)](https://packagist.org/packages/illuma-law/laravel-hybrid-search)
-[![Total Downloads](https://img.shields.io/packagist/dt/illuma-law/laravel-hybrid-search?label=Downloads)](https://packagist.org/packages/illuma-law/laravel-hybrid-search)
+[![Latest Stable Version](https://img.shields.io/packagist/v/illuma-law/laravel-hybrid-search?label=Version)](https://packagist.org/packages/illuma-law/laravel-hybrid-search)
 
 **Portable Full-Text Search macros and Reciprocal Rank Fusion**
 
