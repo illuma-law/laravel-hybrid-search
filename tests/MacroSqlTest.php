@@ -16,11 +16,11 @@ function getHybridSearchMockBuilder(string $driver): Builder
     $connection->shouldReceive('raw')->andReturnUsing(fn ($value) => new Expression($value));
 
     $grammar = match ($driver) {
-        'mysql' => new MySqlGrammar($connection),
-        'pgsql' => new PostgresGrammar($connection),
-        'sqlite' => new SQLiteGrammar($connection),
-        'sqlsrv' => new SqlServerGrammar($connection),
-        'mariadb' => new MySqlGrammar($connection),
+        'mysql'       => new MySqlGrammar($connection),
+        'pgsql'       => new PostgresGrammar($connection),
+        'sqlite'      => new SQLiteGrammar($connection),
+        'sqlsrv'      => new SqlServerGrammar($connection),
+        'mariadb'     => new MySqlGrammar($connection),
         'singlestore' => new MySqlGrammar($connection),
     };
 
@@ -68,7 +68,6 @@ it('handles negative hybrid fulltext search', function (string $driver) {
     } elseif ($driver === 'sqlsrv') {
         expect($sql)->toContain('not contains');
     } else {
-        // Native fulltext uses a nested where with ! (not) or NOT
         expect($sql)->toMatch('/not\s*\(|!\s*\(/i');
     }
 })->with(['pgsql', 'mysql', 'sqlite', 'sqlsrv', 'mariadb', 'singlestore']);

@@ -59,14 +59,8 @@ it('uses native fulltext for other drivers', function () {
     $connection->shouldReceive('getSchemaGrammar')->andReturn(new MySqlGrammar($connection));
     $connection->shouldReceive('getDriverName')->andReturn('mysql');
 
-    // We can't easily mock Schema::table since it's a facade.
-    // But we already have coverage for FullTextSchema::createNative in other tests.
-    // So here we just want to see that it calls the FullTextSchema::index which leads to createNative
-
     $blueprint = new Blueprint($connection, 'test_table');
 
-    // We expect this to fail because Schema::table('mysql') will try to connect.
-    // But it will cover the lines in ServiceProvider.
     try {
         $blueprint->hybridFullText(['title']);
     } catch (Throwable) {

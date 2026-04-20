@@ -50,7 +50,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
             $self = $this;
             $driver = $self->getConnection()->getDriverName();
 
-            // 1. SQLite Path
             if ($driver === 'sqlite') {
                 $table = $self->from;
                 $ftsTable = "{$table}_fts";
@@ -61,7 +60,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
                 return $self->whereRaw($raw, [$escapedValue], $boolean);
             }
 
-            // 2. SQL Server Path (Laravel doesn't support whereFullText for sqlsrv)
             if ($driver === 'sqlsrv') {
                 $columns = is_array($columns) ? implode(', ', array_map([$self->getGrammar(), 'wrap'], $columns)) : $self->getGrammar()->wrap($columns);
                 $placeholder = $self->getGrammar()->parameter($value);
@@ -70,7 +68,6 @@ class HybridSearchServiceProvider extends PackageServiceProvider
                 return $self->whereRaw($raw, [$value], $boolean);
             }
 
-            // 3. PostgreSQL / MySQL Path (Use native whereFullText)
             if ($not) {
                 return $self->whereNot(function ($query) use ($columns, $value, $options) {
                     $query->whereFullText($columns, $value, $options);
