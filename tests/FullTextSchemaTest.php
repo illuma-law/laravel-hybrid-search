@@ -1,9 +1,11 @@
 <?php
 
+use IllumaLaw\HybridSearch\FullTextSchema;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Grammars\MySqlGrammar;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use IllumaLaw\HybridSearch\FullTextSchema;
 
 it('registers the hybridFullText macro on blueprint', function () {
     expect(Blueprint::hasMacro('hybridFullText'))->toBeTrue();
@@ -35,17 +37,17 @@ it('can create a fulltext index and virtual table for sqlite', function () {
 });
 
 it('can drop native fulltext index', function () {
-    $connection = Mockery::mock(\Illuminate\Database\Connection::class);
+    $connection = Mockery::mock(Connection::class);
     $connection->shouldReceive('getDriverName')->andReturn('mysql');
-    $connection->shouldReceive('getSchemaGrammar')->atLeast()->once()->andReturn(new \Illuminate\Database\Schema\Grammars\MySqlGrammar($connection));
+    $connection->shouldReceive('getSchemaGrammar')->atLeast()->once()->andReturn(new MySqlGrammar($connection));
     $connection->shouldReceive('getConfig')->with('prefix_indexes')->andReturn(false);
-    
+
     Schema::shouldReceive('getConnection')->andReturn($connection);
     Schema::shouldReceive('table')->with('test_table', Mockery::type('Closure'))->once()
         ->andReturnUsing(function ($table, $callback) use ($connection) {
             $callback(new Blueprint($connection, $table));
         });
-    
+
     FullTextSchema::drop('test_table', ['title']);
     expect(true)->toBeTrue();
 });

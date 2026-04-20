@@ -2,16 +2,18 @@
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
+use Illuminate\Database\Query\Processors\Processor;
 
 function getHybridSearchMockBuilder(string $driver): Builder
 {
     $connection = Mockery::mock(Connection::class);
     $connection->shouldReceive('getTablePrefix')->andReturn('');
-    $connection->shouldReceive('raw')->andReturnUsing(fn($value) => new \Illuminate\Database\Query\Expression($value));
+    $connection->shouldReceive('raw')->andReturnUsing(fn ($value) => new Expression($value));
 
     $grammar = match ($driver) {
         'mysql' => new MySqlGrammar($connection),
@@ -23,7 +25,7 @@ function getHybridSearchMockBuilder(string $driver): Builder
     };
 
     $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
-    $connection->shouldReceive('getPostProcessor')->andReturn(new \Illuminate\Database\Query\Processors\Processor());
+    $connection->shouldReceive('getPostProcessor')->andReturn(new Processor);
     $connection->shouldReceive('getDatabaseName')->andReturn('laravel');
     $connection->shouldReceive('getDriverName')->andReturn($driver);
 
@@ -45,7 +47,7 @@ it('generates correct hybrid fulltext SQL for each driver', function (string $dr
     } else {
         $builder->whereHybridFullText(['title', 'body'], 'search query');
         $sql = strtolower($builder->toSql());
-        
+
         if ($driver === 'pgsql') {
             expect($sql)->toContain('to_tsvector');
         } else {
