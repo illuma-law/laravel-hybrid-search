@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use IllumaLaw\HybridSearch\ReciprocalRankFusion;
 
 it('combines multiple rankings using RRF', function () {

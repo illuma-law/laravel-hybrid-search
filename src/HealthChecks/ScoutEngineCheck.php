@@ -27,9 +27,9 @@ final class ScoutEngineCheck extends Check
         try {
             return match ($driver) {
                 'meilisearch' => $this->checkMeilisearch($timeout),
-                'typesense' => $this->checkTypesense($timeout),
-                'algolia' => $this->checkAlgolia($timeout),
-                default => (new Result(Status::skipped(), "Scout driver [{$driver}] has no automated health probe."))
+                'typesense'   => $this->checkTypesense($timeout),
+                'algolia'     => $this->checkAlgolia($timeout),
+                default       => (new Result(Status::skipped(), "Scout driver [{$driver}] has no automated health probe."))
                     ->shortSummary('Skipped'),
             };
         } catch (Throwable $e) {
@@ -99,7 +99,7 @@ final class ScoutEngineCheck extends Check
         $response = Http::timeout($timeout)
             ->withHeaders([
                 'X-Algolia-Application-Id' => $appId,
-                'X-Algolia-API-Key' => $secret,
+                'X-Algolia-API-Key'        => $secret,
             ])
             ->get($url);
 

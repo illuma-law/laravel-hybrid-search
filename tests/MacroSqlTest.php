@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
@@ -18,13 +20,13 @@ function getHybridSearchMockBuilder(string $driver): Builder
     $connection->shouldReceive('raw')->andReturnUsing(fn (mixed $value): Expression => new Expression((string) $value));
 
     $grammar = match ($driver) {
-        'mysql' => new MySqlGrammar($connection),
-        'pgsql' => new PostgresGrammar($connection),
-        'sqlite' => new SQLiteGrammar($connection),
-        'sqlsrv' => new SqlServerGrammar($connection),
-        'mariadb' => new MySqlGrammar($connection),
+        'mysql'       => new MySqlGrammar($connection),
+        'pgsql'       => new PostgresGrammar($connection),
+        'sqlite'      => new SQLiteGrammar($connection),
+        'sqlsrv'      => new SqlServerGrammar($connection),
+        'mariadb'     => new MySqlGrammar($connection),
         'singlestore' => new MySqlGrammar($connection),
-        default => throw new InvalidArgumentException("Unsupported driver: {$driver}"),
+        default       => throw new InvalidArgumentException("Unsupported driver: {$driver}"),
     };
 
     $connection->shouldReceive('getQueryGrammar')->andReturn($grammar);
